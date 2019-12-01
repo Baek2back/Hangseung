@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { getFirstSensor } from "../modules/firstsensor";
+import { getSecondSensor } from "../modules/secondsensor";
+import { getThirdSensor } from "../modules/thirdsensor";
 import { Col, Row } from "antd";
 import Title from "../components/Title";
 import Container from "../components/Container";
@@ -11,10 +13,18 @@ import MoveDetection from "../components/charts/MoveDetection";
 import Temperature from "../components/charts/Temperature";
 import Tvoc from "../components/charts/Tvoc";
 
-const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
+const OverviewPage = ({
+  data,
+  loadingData,
+  getFirstSensor,
+  getSecondSensor,
+  getThirdSensor,
+}) => {
   React.useEffect(() => {
     getFirstSensor();
-  }, [getFirstSensor]);
+    getSecondSensor();
+    getThirdSensor();
+  }, [getFirstSensor, getSecondSensor, getThirdSensor]);
   console.log(data);
   return (
     <>
@@ -24,7 +34,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="fire" name="온도" />}
           >
-            {data && <Temperature s1={data} />}
+            {!data.includes(null) && (
+              <Temperature s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
         <Col lg={8}>
@@ -32,7 +44,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="cloud" name="습도" />}
           >
-            {data && <Humidity s1={data} />}
+            {!data.includes(null) && (
+              <Humidity s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
         <Col lg={8}>
@@ -40,7 +54,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="bulb" name="조도" />}
           >
-            {data && <Illumination s1={data} />}
+            {!data.includes(null) && (
+              <Illumination s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
       </Row>
@@ -50,7 +66,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="team" name="재실 감지" />}
           >
-            {data && <MoveDetection s1={data} />}
+            {!data.includes(null) && (
+              <MoveDetection s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
         <Col lg={8}>
@@ -58,7 +76,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="experiment" name="이산화탄소" />}
           >
-            {data && <Co2 s1={data} />}
+            {!data.includes(null) && (
+              <Co2 s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
         <Col lg={8}>
@@ -66,7 +86,9 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
             loading={loadingData}
             title={<Title type="frown" name="유해 가스" />}
           >
-            {data && <Tvoc s1={data} />}
+            {!data.includes(null) && (
+              <Tvoc s1={data[0]} s2={data[1]} s3={data[2]} />
+            )}
           </Container>
         </Col>
       </Row>
@@ -74,11 +96,17 @@ const OverviewPage = ({ data, loadingData, getFirstSensor }) => {
   );
 };
 export default connect(
-  ({ firstsensor }) => ({
-    data: firstsensor.data,
-    loadingData: firstsensor.loading.GET_DATA,
+  ({ firstsensor, secondsensor, thirdsensor }) => ({
+    data: [firstsensor.data, secondsensor.data, thirdsensor.data],
+    loadingData: [
+      thirdsensor.loading.GET_DATA,
+      thirdsensor.loading.GET_DATA,
+      thirdsensor.loading.GET_DATA,
+    ].includes(null),
   }),
   {
     getFirstSensor,
+    getSecondSensor,
+    getThirdSensor,
   },
 )(OverviewPage);

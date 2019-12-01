@@ -41,11 +41,11 @@ const Co2 = (props) => {
     },
     {
       name: "S2",
-      data: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+      data: props.s2["m2m:cin"]["con"]["co2"],
     },
     {
       name: "S3",
-      data: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+      data: props.s3["m2m:cin"]["con"]["co2"],
     },
   ];
   return <ReactApexChart options={options} series={series} height={315} />;
