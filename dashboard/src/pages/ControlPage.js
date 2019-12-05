@@ -5,7 +5,7 @@ import { List, Avatar, Icon, Switch } from "antd";
 const getLedStatus = async () => {
   try {
     return await axios.get(
-      "http://localhost:7579/Mobius/gisa/cnt-sensor1/latest",
+      "http://localhost:7579/Mobius/gisa/cnt-led-status/latest",
       {
         headers: {
           Accept: "application/json",
@@ -20,10 +20,20 @@ const getLedStatus = async () => {
 };
 
 const ControlPage = () => {
+  const [status, setStatus] = React.useState(false);
+  React.useEffect(() => {
+    const fetchStatus = async () => {
+      const result = await getLedStatus();
+      console.log(result);
+      setStatus(true);
+    };
+    fetchStatus();
+  }, []);
+
   const onClick = () => {
     let body = JSON.stringify({
       "m2m:cin": {
-        con: 1,
+        con: status === true ? 2 : 1,
       },
     });
     axios
@@ -37,17 +47,10 @@ const ControlPage = () => {
       })
       .then((response) => {
         console.log(response);
+        setStatus(!status);
       })
       .catch((error) => console.error(error));
   };
-  const [status, setStatus] = React.useState("");
-  React.useEffect(() => {
-    const fetchStatus = async () => {
-      const result = await getLedStatus();
-      setStatus(result);
-    };
-    fetchStatus();
-  }, []);
 
   const rooms = [
     {

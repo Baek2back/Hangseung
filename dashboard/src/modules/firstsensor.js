@@ -1,18 +1,43 @@
 import { handleActions } from "redux-actions";
-import * as api from "../lib/api";
 
 const GET_DATA = "firstsensor/GET_DATA";
 const GET_DATA_SUCCESS = "firstsensor/GET_DATA_SUCCESS";
 const GET_DATA_FAILURE = "firstsensor/GET_DATA_FAILURE";
 
-export const getFirstSensor = () => async (dispatch) => {
+export const getFirstSensor = (date) => (
+  dispatch,
+  getState,
+  { getFirestore },
+) => {
   dispatch({ type: GET_DATA });
   try {
-    const response = await api.getFirstSensor();
-    dispatch({
-      type: GET_DATA_SUCCESS,
-      payload: response.data,
-    });
+    const firestore = getFirestore();
+    firestore
+      .collection("s1")
+      .doc("date")
+      .collection(date)
+      .get()
+      .then((docs) => {
+        if (docs.empty) {
+          dispatch({
+            type: GET_DATA_FAILURE,
+            payload: true,
+            error: true,
+          });
+          return;
+        }
+        let time = [];
+        let contents = [];
+        //doc.id : 시간, doc.data : 센서 데이터
+        docs.forEach((doc) => {
+          time.push(doc.id);
+          contents.push(doc.data());
+        });
+        dispatch({
+          type: GET_DATA_SUCCESS,
+          payload: [time, contents],
+        });
+      });
   } catch (e) {
     dispatch({
       type: GET_DATA_FAILURE,

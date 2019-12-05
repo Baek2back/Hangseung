@@ -27,6 +27,12 @@ const options = {
   },
   xaxis: {
     type: "numeric",
+    labels: {
+      show: false,
+    },
+    axisTicks: {
+      show: false,
+    },
   },
   grid: {
     clipMarkers: false,
@@ -34,20 +40,25 @@ const options = {
 };
 
 const Tvoc = (props) => {
+  const time = props.s1[0];
+  const contents = props.s1[1].map((element) => {
+    return element.tvoc;
+  });
+  const data = time
+    .map((value, index) => {
+      return [...[value, contents[index]]];
+    })
+    .map((value) => {
+      return { x: value[0], y: value[1] };
+    });
+
   const series = [
     {
       name: "S1",
-      data: props.s1["m2m:cin"]["con"]["tvoc"],
-    },
-    {
-      name: "S2",
-      data: props.s2["m2m:cin"]["con"]["tvoc"],
-    },
-    {
-      name: "S3",
-      data: props.s3["m2m:cin"]["con"]["tvoc"],
+      data: data,
     },
   ];
+
   return <ReactApexChart options={options} series={series} height={315} />;
 };
 export default Tvoc;
