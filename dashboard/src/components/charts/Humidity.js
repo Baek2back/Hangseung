@@ -52,10 +52,26 @@ const Humidity = (props) => {
       return { x: value[0], y: value[1] };
     });
 
+  const time2 = props.s2[0];
+  const contents2 = props.s2[1].map((element) => {
+    return element.humidity;
+  });
+  const data2 = time2
+    .map((value, index) => {
+      return [...[value, contents2[index]]];
+    })
+    .map((value) => {
+      return { x: value[0], y: value[1] };
+    });
+
   const series = [
     {
       name: "S1",
       data: data,
+    },
+    {
+      name: "S2",
+      data: data2,
     },
   ];
   return <ReactApexChart options={options} series={series} height={315} />;
